@@ -1,4 +1,6 @@
-/* Frutiger Aero & Purikura Stylesheet */
+/* ==========================================================================
+   Frutiger Aero & Purikura Design System
+   ========================================================================== */
 :root {
   --glass-bg: rgba(255, 255, 255, 0.55);
   --glass-border: rgba(255, 255, 255, 0.85);
@@ -19,6 +21,7 @@ body {
   padding: 20px;
 }
 
+/* 수포 애니메이션 */
 .background-decorations {
   position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0;
 }
@@ -38,6 +41,7 @@ body {
   100% { transform: translateY(-30px); }
 }
 
+/* 윈도우 창 레이아웃 */
 .aero-window {
   position: relative; z-index: 1; width: 100%; max-width: 980px; min-height: 740px;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.75) 0%, rgba(225, 245, 255, 0.65) 100%);
@@ -65,16 +69,101 @@ body {
 
 .aero-content { flex: 1; padding: 24px; display: flex; flex-direction: column; }
 
-.step-indicator { display: flex; justify-content: center; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
-.step-pill {
-  padding: 8px 18px; border-radius: 30px; font-size: 13px; font-weight: 600; color: #3b658d;
-  background: rgba(255, 255, 255, 0.5); border: 1px solid rgba(255, 255, 255, 0.8);
-}
-.step-pill.active {
-  background: linear-gradient(180deg, #ffffff 0%, #d8f0ff 48%, #9fd5ff 52%, #68baff 100%);
-  color: #003e73; border-color: #75beff; box-shadow: 0 4px 12px rgba(0, 120, 230, 0.3); transform: translateY(-2px);
+/* ==========================================================================
+   에어로 프로그레스 바
+   ========================================================================== */
+.aero-progress-container {
+  width: 100%;
+  max-width: 620px;
+  margin: 0 auto 26px auto;
+  user-select: none;
 }
 
+.aero-progress-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 800;
+  color: #0b497e;
+  margin-bottom: 6px;
+  padding: 0 4px;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.9);
+}
+
+.aero-progress-track {
+  position: relative;
+  height: 22px;
+  background: linear-gradient(180deg, #cde3f7 0%, #ebf5ff 50%, #ffffff 100%);
+  border-radius: 20px;
+  border: 1.5px solid rgba(255, 255, 255, 0.9);
+  box-shadow: inset 0 2px 5px rgba(0, 50, 100, 0.25), 0 2px 6px rgba(0, 0, 0, 0.08);
+  padding: 2px;
+  overflow: visible;
+}
+
+.aero-progress-bar {
+  position: relative;
+  width: 25%;
+  height: 100%;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #5fe4ff 0%, #00b4d8 48%, #0077b6 52%, #0096c7 100%);
+  box-shadow: 0 0 12px rgba(0, 180, 255, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  transition: width 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
+}
+
+.progress-shine {
+  position: absolute;
+  top: 1px;
+  left: 3%;
+  width: 94%;
+  height: 42%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.15) 100%);
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+.progress-stripes {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.18) 0,
+    rgba(255, 255, 255, 0.18) 12px,
+    transparent 12px,
+    transparent 24px
+  );
+  animation: aeroStripes 1.5s linear infinite;
+}
+
+@keyframes aeroStripes {
+  0% { background-position: 0 0; }
+  100% { background-position: 34px 0; }
+}
+
+.track-markers {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 10px; box-sizing: border-box; pointer-events: none;
+}
+
+.marker {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: #ffffff; border: 1.5px solid #8ec5fc;
+  box-shadow: 0 1px 3px rgba(0, 60, 120, 0.25);
+  transition: all 0.3s ease; z-index: 2;
+}
+
+.marker.active {
+  background: #00f0ff; border-color: #ffffff;
+  box-shadow: 0 0 8px #00d2ff, 0 1px 3px rgba(0,0,0,0.3);
+  transform: scale(1.25);
+}
+
+/* 헤딩 */
 .glossy-heading {
   font-size: 26px; font-weight: 800; text-align: center; color: #034882;
   text-shadow: 0 1px 2px rgba(255, 255, 255, 0.9); margin-bottom: 6px;
@@ -132,16 +221,21 @@ body {
 .mini-slots { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 4px; width: 100%; height: 100%; }
 .mini-slots span { background: rgba(255, 255, 255, 0.5); border-radius: 4px; border: 1px dashed rgba(0, 0, 0, 0.2); }
 
-.frame-aqua-gloss { background: linear-gradient(135deg, #00d2ff 0%, #0078d7 100%); border: 3px solid #fff; }
-.frame-cyber-green { background: linear-gradient(135deg, #a8ff78 0%, #78ffd6 100%); border: 3px solid #fff; }
-.frame-y2k-pink { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); border: 3px solid #fff; }
-.frame-matrix-holo { background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); border: 3px solid #a8e6cf; }
+/* 8종 프리뷰 그라데이션 */
+.frame-aqua-gloss { background: linear-gradient(135deg, #00d2ff 0%, #0078d7 100%); border: 3px solid #ffffff; }
+.frame-cyber-green { background: linear-gradient(135deg, #70e000 0%, #38b000 50%, #007200 100%); border: 3px solid #ffffff; }
+.frame-y2k-pink { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #ff758c 100%); border: 3px solid #ffffff; }
+.frame-matrix-holo { background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%); border: 3px solid #00f0ff; }
+.frame-deep-marine { background: linear-gradient(135deg, #0052d4 0%, #4364f7 50%, #6fb1fc 100%); border: 3px solid #a8e6cf; }
+.frame-silver-metal { background: linear-gradient(135deg, #e0e0e0 0%, #ffffff 45%, #b0b0b0 55%, #757575 100%); border: 3px solid #ffffff; }
+.frame-sun-citrus { background: linear-gradient(135deg, #ffe259 0%, #ffa751 100%); border: 3px solid #ffffff; }
+.frame-cyber-neon { background: linear-gradient(135deg, #ff007f 0%, #7928ca 50%, #00f0ff 100%); border: 3px solid #ffff00; }
 
 .frame-info .frame-title { display: block; font-weight: 700; color: #0f3f6d; font-size: 14px; margin-bottom: 3px; }
 .frame-info .frame-desc { font-size: 12px; color: #557d9f; }
 .center-align { display: flex; justify-content: center; }
 
-/* 카메라 촬영 화면 */
+/* 카메라 촬영 부스 */
 .booth-container { display: flex; gap: 24px; align-items: flex-start; justify-content: center; flex-wrap: wrap; }
 .video-monitor-wrapper { display: flex; flex-direction: column; align-items: center; gap: 16px; }
 .monitor-bezel {
@@ -171,7 +265,7 @@ body {
 .slot-box img { width: 100%; height: 100%; object-fit: cover; }
 .slot-idx { color: #8bb1d3; font-weight: 800; font-size: 14px; }
 
-/* 데코레이션 화면 */
+/* 데코레이션 */
 .deco-layout { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
 .deco-sidebar { width: 260px; display: flex; flex-direction: column; gap: 14px; }
 .panel-box { background: rgba(255, 255, 255, 0.7); border: 1.5px solid #fff; border-radius: 12px; padding: 14px; }

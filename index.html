@@ -8,12 +8,14 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
 </head>
 <body>
+  <!-- 배경 글로우 및 물방울 장식 -->
   <div class="background-decorations">
     <div class="aqua-orb orb-1"></div>
     <div class="aqua-orb orb-2"></div>
     <div class="aqua-orb orb-3"></div>
   </div>
 
+  <!-- 메인 윈도우 프레임 -->
   <div class="aero-window">
     <header class="aero-titlebar">
       <div class="titlebar-left">
@@ -28,56 +30,117 @@
     </header>
 
     <main class="aero-content">
-      <nav class="step-indicator">
-        <div class="step-pill active" id="step-pill-1">1. 프레임 선택</div>
-        <div class="step-pill" id="step-pill-2">2. 카메라 촬영 (4컷)</div>
-        <div class="step-pill" id="step-pill-3">3. 프리쿠라 꾸미기</div>
-        <div class="step-pill" id="step-pill-4">4. 인쇄 & 이메일 수령</div>
-      </nav>
+      <!-- 에어로 젤리 프로그레스 바 -->
+      <div class="aero-progress-container">
+        <div class="aero-progress-meta">
+          <span class="progress-status" id="progress-status-text">STEP 1 / 4</span>
+          <span class="progress-percent" id="progress-percent-text">25%</span>
+        </div>
+        <div class="aero-progress-track">
+          <div class="aero-progress-bar" id="main-progress-bar">
+            <span class="progress-shine"></span>
+            <span class="progress-stripes"></span>
+          </div>
+          <div class="track-markers">
+            <span class="marker active" data-step="1"></span>
+            <span class="marker" data-step="2"></span>
+            <span class="marker" data-step="3"></span>
+            <span class="marker" data-step="4"></span>
+          </div>
+        </div>
+      </div>
 
-      <!-- 단계 1: 프레임 선택 -->
+      <!-- 단계 1: 8종 프레임 선택 화면 -->
       <section id="stage-frame" class="stage-section active">
         <h2 class="glossy-heading">✨ 감성 프레임을 선택하세요</h2>
         <p class="sub-text">에어로 푸르티거와 세기말 감성이 담긴 테두리를 고르세요.</p>
         
         <div class="frame-selector-grid">
+          <!-- 1. 아쿠아 비스타 -->
           <div class="frame-card active" data-frame="aqua-gloss">
             <div class="frame-preview frame-aqua-gloss">
               <div class="mini-slots"><span></span><span></span><span></span><span></span></div>
             </div>
             <div class="frame-info">
-              <span class="frame-title">Aqua Vista Gloss</span>
-              <span class="frame-desc">푸른 바다 & 투명 젤리 광택</span>
+              <span class="frame-title">🫧 Aqua Vista Gloss</span>
+              <span class="frame-desc">2006 비스타 투명 아쿠아 젤리</span>
             </div>
           </div>
 
+          <!-- 2. 에어로 메도우 -->
           <div class="frame-card" data-frame="cyber-green">
             <div class="frame-preview frame-cyber-green">
               <div class="mini-slots"><span></span><span></span><span></span><span></span></div>
             </div>
             <div class="frame-info">
-              <span class="frame-title">Meadow Bliss</span>
-              <span class="frame-desc">초원 언덕 & 푸른 하늘 감성</span>
+              <span class="frame-title">🍃 Meadow Bliss</span>
+              <span class="frame-desc">푸른 언덕과 맑은 하늘 감성</span>
             </div>
           </div>
 
+          <!-- 3. Y2K 사쿠라 펄 -->
           <div class="frame-card" data-frame="y2k-pink">
             <div class="frame-preview frame-y2k-pink">
               <div class="mini-slots"><span></span><span></span><span></span><span></span></div>
             </div>
             <div class="frame-info">
-              <span class="frame-title">Y2K Sakura Bubble</span>
-              <span class="frame-desc">러블리 핑크 & 펄 반짝이</span>
+              <span class="frame-title">🎀 Y2K Sakura Bubble</span>
+              <span class="frame-desc">딸기우유빛 프리쿠라 펄 테두리</span>
             </div>
           </div>
 
+          <!-- 4. 코스모 홀로그램 -->
           <div class="frame-card" data-frame="matrix-holo">
             <div class="frame-preview frame-matrix-holo">
               <div class="mini-slots"><span></span><span></span><span></span><span></span></div>
             </div>
             <div class="frame-info">
-              <span class="frame-title">Cosmo Aero Night</span>
-              <span class="frame-desc">홀로그램 글로우 다크 감성</span>
+              <span class="frame-title">🌌 Cosmo Hologram</span>
+              <span class="frame-desc">사이버 퓨처리즘 딥 오로라</span>
+            </div>
+          </div>
+
+          <!-- 5. 딥 마린 아쿠아리움 -->
+          <div class="frame-card" data-frame="deep-marine">
+            <div class="frame-preview frame-deep-marine">
+              <div class="mini-slots"><span></span><span></span><span></span><span></span></div>
+            </div>
+            <div class="frame-info">
+              <span class="frame-title">🐬 Deep Sea Aqua</span>
+              <span class="frame-desc">맑은 수면 왜곡 & 돌고래 바다</span>
+            </div>
+          </div>
+
+          <!-- 6. WMP 실버 메탈릭 -->
+          <div class="frame-card" data-frame="silver-metal">
+            <div class="frame-preview frame-silver-metal">
+              <div class="mini-slots"><span></span><span></span><span></span><span></span></div>
+            </div>
+            <div class="frame-info">
+              <span class="frame-title">💿 Silver Cyber WMP</span>
+              <span class="frame-desc">2000년대 미디어 플레이어 크롬 광택</span>
+            </div>
+          </div>
+
+          <!-- 7. 트로피컬 시트러스 -->
+          <div class="frame-card" data-frame="sun-citrus">
+            <div class="frame-preview frame-sun-citrus">
+              <div class="mini-slots"><span></span><span></span><span></span><span></span></div>
+            </div>
+            <div class="frame-info">
+              <span class="frame-title">🍋 Citrus Energy</span>
+              <span class="frame-desc">상큼한 과즙 & 투명 옐로 젤리</span>
+            </div>
+          </div>
+
+          <!-- 8. 하라주쿠 네온 사이버팝 -->
+          <div class="frame-card" data-frame="cyber-neon">
+            <div class="frame-preview frame-cyber-neon">
+              <div class="mini-slots"><span></span><span></span><span></span><span></span></div>
+            </div>
+            <div class="frame-info">
+              <span class="frame-title">⚡ Neon Cyber Pop</span>
+              <span class="frame-desc">세기말 도쿄 하라주쿠 네온 일렉트릭</span>
             </div>
           </div>
         </div>
@@ -90,7 +153,7 @@
         </div>
       </section>
 
-      <!-- 단계 2: 웹캠 촬영 -->
+      <!-- 단계 2: 웹캠 촬영 부스 -->
       <section id="stage-camera" class="stage-section">
         <h2 class="glossy-heading">📷 4컷 릴레이 촬영 부스</h2>
         <p class="sub-text">촬영 시작 버튼을 누르면 3초 타이머 후 총 4장을 연속 촬영합니다!</p>
@@ -201,7 +264,7 @@
         </div>
       </section>
 
-      <!-- 단계 4: 완성 및 수령 -->
+      <!-- 단계 4: 완성 및 수령 화면 -->
       <section id="stage-result" class="stage-section">
         <h2 class="glossy-heading">🎉 완성되었습니다!</h2>
         <p class="sub-text">완성된 프리쿠라 사진을 이메일로 전송하거나 바로 저장하세요.</p>
