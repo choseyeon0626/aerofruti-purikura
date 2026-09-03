@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const BACKEND_API_URL = 'http://localhost:5000/api/send-photo';
 
-  // --- [레트로 사운드 신시사이저 (Web Audio API)] ---
+  // --- [레트로 아케이드 효과음 (Web Audio API)] ---
   const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   function playArcadeSound(type) {
     if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -63,7 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
   function update3DDeck() {
     cards.forEach((card, idx) => {
       let offset = idx - currentCardIndex;
-      // 순환 루프 계산
       if (offset > totalCards / 2) offset -= totalCards;
       if (offset < -totalCards / 2) offset += totalCards;
 
@@ -93,7 +92,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 카드 넘기기 컨트롤
   function nextCard() {
     playArcadeSound('card-swipe');
     currentCardIndex = (currentCardIndex + 1) % totalCards;
@@ -118,7 +116,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // 홀로그램 자이로/틸트 인터랙션
     card.addEventListener('mousemove', (e) => {
       if (card.classList.contains('active')) {
         const rect = card.getBoundingClientRect();
@@ -202,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // --- [4컷 릴레이 타이머 촬영] ---
+  // --- [4컷 연속 촬영] ---
   btnStartCountdown.addEventListener('click', () => {
     capturedShots = [];
     updateSlotPreviews();
@@ -238,7 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 1000);
   }
 
-  // --- [비율 유지 크롭 & 프리쿠라 뽀샤시 뷰티 필터] ---
+  // --- [비율 유지 크롭 & 뽀샤시 뷰티 필터] ---
   function takeSingleShot(index) {
     flashOverlay.classList.add('active');
     setTimeout(() => flashOverlay.classList.remove('active'), 150);
@@ -253,7 +250,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const vWidth = webcamVideo.videoWidth || 640;
     const vHeight = webcamVideo.videoHeight || 480;
 
-    // 중앙 크롭 비율 계산 (찌그러짐 방지)
     const targetAspect = targetW / targetH;
     const videoAspect = vWidth / vHeight;
     let sWidth, sHeight, sx, sy;
@@ -339,7 +335,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // --- [Fabric.js 캔버스 데코레이션] ---
+  // --- [Fabric.js 캔버스 데코레이션 (DNFBitBitv2 폰트 적용)] ---
   function initFabricCanvas() {
     if (!fabricCanvas) {
       fabricCanvas = new fabric.Canvas('purikura-canvas', {
@@ -379,9 +375,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     fabricCanvas.add(innerGlowRect);
 
+    // 상단 타이틀 (DNFBitBitv2 웹 폰트 적용)
     const titleText = new fabric.Text(theme.title, {
       left: 240, top: 30, originX: 'center', fontSize: 16, fontWeight: 'bold',
-      fill: theme.border, fontFamily: 'Segoe UI, sans-serif',
+      fill: theme.border, fontFamily: 'DNFBitBitv2, Segoe UI, sans-serif',
       shadow: new fabric.Shadow({ color: 'rgba(255,255,255,0.9)', blur: 4, offsetX: 1, offsetY: 1 }),
       selectable: false, evented: false
     });
@@ -410,9 +407,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const now = new Date();
     const dateStr = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;
+    
+    // 하단 날짜 & 테마 태그 (DNFBitBitv2 웹 폰트 적용)
     const dateText = new fabric.Text(`★ ${theme.tag} ★ ${dateStr}`, {
       left: 240, top: 670, originX: 'center', fontSize: 11, fontWeight: 'bold',
-      fill: theme.border, fontFamily: 'Segoe UI, sans-serif', selectable: false, evented: false
+      fill: theme.border, fontFamily: 'DNFBitBitv2, Segoe UI, sans-serif', selectable: false, evented: false
     });
     fabricCanvas.add(dateText);
   }
@@ -428,7 +427,7 @@ document.addEventListener('DOMContentLoaded', () => {
       left: 240, top: 360, originX: 'center', originY: 'center',
       fontSize: isEmoji ? 44 : 22, fontWeight: '900',
       fill: isEmoji ? '#000000' : '#ffffff', stroke: isEmoji ? null : '#0078d7',
-      strokeWidth: isEmoji ? 0 : 3, fontFamily: 'Segoe UI',
+      strokeWidth: isEmoji ? 0 : 3, fontFamily: 'DNFBitBitv2, Segoe UI, sans-serif',
       cornerColor: '#00d2ff', cornerSize: 10, transparentCorners: false
     });
     fabricCanvas.add(stickerText);
@@ -541,7 +540,7 @@ document.addEventListener('DOMContentLoaded', () => {
     link.click();
   });
 
-  // 다시 시작
+  // 처음부터 시작
   btnRestartApp.addEventListener('click', () => {
     playArcadeSound('card-swipe');
     capturedShots = [];
