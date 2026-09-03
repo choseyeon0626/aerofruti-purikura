@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aero Purikura Studio 🫧 에어로 프리쿠라 스티커 부스</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+</head>
+<body>
+  <div class="background-decorations">
+    <div class="aqua-orb orb-1"></div>
+    <div class="aqua-orb orb-2"></div>
+    <div class="aqua-orb orb-3"></div>
+  </div>
+
+  <div class="aero-window">
+    <header class="aero-titlebar">
+      <div class="titlebar-left">
+        <span class="aero-logo-icon">🫧</span>
+        <span class="window-title">Aero Purikura Studio.exe - 2000s Photo Booth</span>
+      </div>
+      <div class="titlebar-controls">
+        <button class="win-btn minimize">_</button>
+        <button class="win-btn maximize">□</button>
+        <button class="win-btn close">✕</button>
+      </div>
+    </header>
+
+    <main class="aero-content">
+      <nav class="step-indicator">
+        <div class="step-pill active" id="step-pill-1">1. 프레임 선택</div>
+        <div class="step-pill" id="step-pill-2">2. 카메라 촬영 (4컷)</div>
+        <div class="step-pill" id="step-pill-3">3. 프리쿠라 꾸미기</div>
+        <div class="step-pill" id="step-pill-4">4. 인쇄 & 이메일 수령</div>
+      </nav>
+
+      <!-- 단계 1: 프레임 선택 -->
+      <section id="stage-frame" class="stage-section active">
+        <h2 class="glossy-heading">✨ 감성 프레임을 선택하세요</h2>
+        <p class="sub-text">에어로 푸르티거와 세기말 감성이 담긴 테두리를 고르세요.</p>
+        
+        <div class="frame-selector-grid">
+          <div class="frame-card active" data-frame="aqua-gloss">
+            <div class="frame-preview frame-aqua-gloss">
+              <div class="mini-slots"><span></span><span></span><span></span><span></span></div>
+            </div>
+            <div class="frame-info">
+              <span class="frame-title">Aqua Vista Gloss</span>
+              <span class="frame-desc">푸른 바다 & 투명 젤리 광택</span>
+            </div>
+          </div>
+
+          <div class="frame-card" data-frame="cyber-green">
+            <div class="frame-preview frame-cyber-green">
+              <div class="mini-slots"><span></span><span></span><span></span><span></span></div>
+            </div>
+            <div class="frame-info">
+              <span class="frame-title">Meadow Bliss</span>
+              <span class="frame-desc">초원 언덕 & 푸른 하늘 감성</span>
+            </div>
+          </div>
+
+          <div class="frame-card" data-frame="y2k-pink">
+            <div class="frame-preview frame-y2k-pink">
+              <div class="mini-slots"><span></span><span></span><span></span><span></span></div>
+            </div>
+            <div class="frame-info">
+              <span class="frame-title">Y2K Sakura Bubble</span>
+              <span class="frame-desc">러블리 핑크 & 펄 반짝이</span>
+            </div>
+          </div>
+
+          <div class="frame-card" data-frame="matrix-holo">
+            <div class="frame-preview frame-matrix-holo">
+              <div class="mini-slots"><span></span><span></span><span></span><span></span></div>
+            </div>
+            <div class="frame-info">
+              <span class="frame-title">Cosmo Aero Night</span>
+              <span class="frame-desc">홀로그램 글로우 다크 감성</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="action-row center-align">
+          <button id="btn-goto-camera" class="aero-btn primary-btn large-btn">
+            <span class="btn-shine"></span>
+            📷 사진 찍으러 가기
+          </button>
+        </div>
+      </section>
+
+      <!-- 단계 2: 웹캠 촬영 -->
+      <section id="stage-camera" class="stage-section">
+        <h2 class="glossy-heading">📷 4컷 릴레이 촬영 부스</h2>
+        <p class="sub-text">촬영 시작 버튼을 누르면 3초 타이머 후 총 4장을 연속 촬영합니다!</p>
+
+        <div class="booth-container">
+          <div class="video-monitor-wrapper">
+            <div class="monitor-bezel">
+              <video id="webcam" autoplay playsinline muted></video>
+              <div id="flash-overlay" class="flash-overlay"></div>
+              <div id="countdown-display" class="countdown-display">3</div>
+            </div>
+            
+            <div class="booth-controls">
+              <button id="btn-start-countdown" class="aero-btn green-btn pulse-glow">
+                <span class="btn-shine"></span>
+                🔴 촬영 시작 (3초 타이머)
+              </button>
+              <button id="btn-retake-camera" class="aero-btn secondary-btn" style="display:none;">
+                <span class="btn-shine"></span>
+                🔄 다시 찍기
+              </button>
+            </div>
+          </div>
+
+          <div class="shot-previews-strip">
+            <h4 class="strip-title">촬영 스트립 (0/4)</h4>
+            <div class="strip-slots">
+              <div class="slot-box" id="slot-0"><span class="slot-idx">#1</span></div>
+              <div class="slot-box" id="slot-1"><span class="slot-idx">#2</span></div>
+              <div class="slot-box" id="slot-2"><span class="slot-idx">#3</span></div>
+              <div class="slot-box" id="slot-3"><span class="slot-idx">#4</span></div>
+            </div>
+            <button id="btn-goto-deco" class="aero-btn primary-btn" disabled>
+              <span class="btn-shine"></span>
+              🎨 꾸미기 단계로 이동 ➜
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 단계 3: 프리쿠라 꾸미기 -->
+      <section id="stage-deco" class="stage-section">
+        <div class="deco-layout">
+          <div class="deco-sidebar">
+            <div class="panel-box">
+              <h3 class="panel-title">🪄 스티커 팩</h3>
+              <div class="sticker-grid">
+                <button class="sticker-chip" data-val="🫧">🫧</button>
+                <button class="sticker-chip" data-val="🐬">🐬</button>
+                <button class="sticker-chip" data-val="💖">💖</button>
+                <button class="sticker-chip" data-val="✨">✨</button>
+                <button class="sticker-chip" data-val="🌟">🌟</button>
+                <button class="sticker-chip" data-val="💿">💿</button>
+                <button class="sticker-chip" data-val="🍀">🍀</button>
+                <button class="sticker-chip" data-val="🎀">🎀</button>
+                <button class="sticker-chip" data-val="💧">💧</button>
+                <button class="sticker-chip" data-val="🕊️">🕊️</button>
+                <button class="sticker-chip" data-val="BEST FRIENDS">💖 BEST</button>
+                <button class="sticker-chip" data-val="AERO 2006">🩵 AERO</button>
+                <button class="sticker-chip" data-val="PURIKURA★">★ KURA</button>
+                <button class="sticker-chip" data-val="HAPPY DAY">🌈 HAPPY</button>
+              </div>
+            </div>
+
+            <div class="panel-box">
+              <h3 class="panel-title">🖌️ 네온 글로우 펜</h3>
+              <div class="brush-settings">
+                <div class="color-picker-row">
+                  <span class="color-dot active" style="background:#00f0ff;" data-color="#00f0ff"></span>
+                  <span class="color-dot" style="background:#ff2a85;" data-color="#ff2a85"></span>
+                  <span class="color-dot" style="background:#ffff00;" data-color="#ffff00"></span>
+                  <span class="color-dot" style="background:#39ff14;" data-color="#39ff14"></span>
+                  <span class="color-dot" style="background:#ffffff;" data-color="#ffffff"></span>
+                </div>
+                <div class="brush-actions">
+                  <button id="btn-toggle-brush" class="aero-btn small-btn secondary-btn">
+                    <span class="btn-shine"></span>✏️ 그리기 ON/OFF
+                  </button>
+                  <button id="btn-undo-canvas" class="aero-btn small-btn secondary-btn">
+                    <span class="btn-shine"></span>↩ 뒤로
+                  </button>
+                  <button id="btn-delete-selected" class="aero-btn small-btn red-btn">
+                    <span class="btn-shine"></span>🗑️ 선택 삭제
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel-box">
+              <h3 class="panel-title">🔤 문구 스탬프</h3>
+              <div class="text-stamp-input">
+                <input type="text" id="custom-text-input" placeholder="문구 입력..." maxlength="15">
+                <button id="btn-add-custom-text" class="aero-btn small-btn primary-btn">추가</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="deco-canvas-zone">
+            <div class="canvas-shadow-wrap">
+              <canvas id="purikura-canvas" width="480" height="720"></canvas>
+            </div>
+            
+            <div class="canvas-bottom-bar">
+              <button id="btn-back-to-camera" class="aero-btn secondary-btn">⬅️ 다시 찍기</button>
+              <button id="btn-finish-deco" class="aero-btn primary-btn large-btn pulse-glow">✨ 완성하고 사진 받기 ➜</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 단계 4: 완성 및 수령 -->
+      <section id="stage-result" class="stage-section">
+        <h2 class="glossy-heading">🎉 완성되었습니다!</h2>
+        <p class="sub-text">완성된 프리쿠라 사진을 이메일로 전송하거나 바로 저장하세요.</p>
+
+        <div class="result-layout">
+          <div class="result-preview-box">
+            <img id="final-result-img" alt="Final Purikura Result" />
+          </div>
+
+          <div class="result-action-card">
+            <div class="email-delivery-panel">
+              <h3 class="panel-title">📧 이메일로 사진 받기</h3>
+              <p class="delivery-desc">입력하신 메일함으로 고화질 사진을 발송해 드립니다.</p>
+              
+              <div class="email-input-group">
+                <input type="email" id="user-email-input" placeholder="example@domain.com" required>
+                <button id="btn-send-email" class="aero-btn green-btn">
+                  <span class="btn-shine"></span>🚀 이메일로 전송
+                </button>
+              </div>
+              <div id="email-status-message" class="status-message"></div>
+            </div>
+
+            <div class="divider-text">또는</div>
+
+            <div class="direct-download-panel">
+              <button id="btn-download-direct" class="aero-btn large-btn primary-btn" style="width: 100%;">
+                <span class="btn-shine"></span>💾 내 컴퓨터에 바로 저장 (PNG)
+              </button>
+              <button id="btn-restart-app" class="aero-btn secondary-btn" style="width: 100%; margin-top: 12px;">
+                🔄 처음부터 새로 찍기
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="aero-statusbar">
+      <span class="status-indicator">● Aero Purikura Engine Ready</span>
+      <span class="status-codec">Windows Vista / Aero Glass Enabled</span>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
