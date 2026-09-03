@@ -33,7 +33,7 @@
       <!-- 에어로 젤리 프로그레스 바 -->
       <div class="aero-progress-container">
         <div class="aero-progress-meta">
-          <span class="progress-status" id="progress-status-text">STAGE 1 : CARD SELECT</span>
+          <span class="progress-status" id="progress-status-text">STAGE 1 : CARD DRAW</span>
           <span class="progress-percent" id="progress-percent-text">25%</span>
         </div>
         <div class="aero-progress-track">
@@ -50,163 +50,26 @@
         </div>
       </div>
 
-      <!-- 단계 1: 3D 게임 카드 덱 선택 화면 -->
+      <!-- 단계 1: 랜덤 3장 카드 뽑기 화면 -->
       <section id="stage-frame" class="stage-section active">
         <div class="game-header-banner">
-          <span class="arcade-badge">INSERT COIN 🪙 READY</span>
-          <h2 class="arcade-heading">SELECT YOUR FRAME CARD</h2>
-          <p class="arcade-sub">카드를 좌우로 넘겨 홀로그램 프레임을 선택하세요!</p>
+          <span class="arcade-badge">LUCKY 3-CARD DRAW 🎲 READY</span>
+          <h2 class="arcade-heading">CHOOSE YOUR LUCKY FRAME</h2>
+          <p class="arcade-sub">뽑힌 3장의 카드 중 마음에 드는 프레임 카드를 클릭하세요!</p>
         </div>
 
-        <!-- 3D 덱 캐러셀 컨테이너 -->
-        <div class="card-arcade-viewport">
-          <button id="btn-card-prev" class="arcade-nav-btn prev-btn" title="이전 카드">〈</button>
-
-          <div class="card-deck-track" id="cardDeckTrack">
-            <!-- Card 1 -->
-            <div class="holo-card active" data-frame="aqua-gloss" data-index="0">
-              <div class="card-inner">
-                <div class="card-header-badge">★ ULTRA RARE</div>
-                <div class="card-visual-screen card-aqua">
-                  <span class="holo-symbol">🫧</span>
-                  <div class="screen-grid"><span></span><span></span><span></span><span></span></div>
-                </div>
-                <div class="card-meta">
-                  <h3 class="card-name">Aqua Vista 2006</h3>
-                  <span class="card-attr">TYPE: WATER / AERO</span>
-                  <p class="card-desc">투명한 물방울과 아쿠아 글래스 광택</p>
-                </div>
-                <div class="card-holo-glare"></div>
-              </div>
-            </div>
-
-            <!-- Card 2 -->
-            <div class="holo-card" data-frame="cyber-green" data-index="1">
-              <div class="card-inner">
-                <div class="card-header-badge">★ NATURE BIO</div>
-                <div class="card-visual-screen card-green">
-                  <span class="holo-symbol">🍃</span>
-                  <div class="screen-grid"><span></span><span></span><span></span><span></span></div>
-                </div>
-                <div class="card-meta">
-                  <h3 class="card-name">Meadow Bliss</h3>
-                  <span class="card-attr">TYPE: GRASS / BIO</span>
-                  <p class="card-desc">바람 부는 푸른 언덕과 맑은 하늘 감성</p>
-                </div>
-                <div class="card-holo-glare"></div>
-              </div>
-            </div>
-
-            <!-- Card 3 -->
-            <div class="holo-card" data-frame="y2k-pink" data-index="2">
-              <div class="card-inner">
-                <div class="card-header-badge">★ SWEET KAWAII</div>
-                <div class="card-visual-screen card-pink">
-                  <span class="holo-symbol">🎀</span>
-                  <div class="screen-grid"><span></span><span></span><span></span><span></span></div>
-                </div>
-                <div class="card-meta">
-                  <h3 class="card-name">Y2K Sakura Pop</h3>
-                  <span class="card-attr">TYPE: FAIRY / PINK</span>
-                  <p class="card-desc">딸기우유빛 프리쿠라 펄 샤인</p>
-                </div>
-                <div class="card-holo-glare"></div>
-              </div>
-            </div>
-
-            <!-- Card 4 -->
-            <div class="holo-card" data-frame="matrix-holo" data-index="3">
-              <div class="card-inner">
-                <div class="card-header-badge">★ COSMO GLOW</div>
-                <div class="card-visual-screen card-holo">
-                  <span class="holo-symbol">🌌</span>
-                  <div class="screen-grid"><span></span><span></span><span></span><span></span></div>
-                </div>
-                <div class="card-meta">
-                  <h3 class="card-name">Cosmo Hologram</h3>
-                  <span class="card-attr">TYPE: DARK / MATRIX</span>
-                  <p class="card-desc">사이버 퓨처리즘 딥 오로라 네온</p>
-                </div>
-                <div class="card-holo-glare"></div>
-              </div>
-            </div>
-
-            <!-- Card 5 -->
-            <div class="holo-card" data-frame="deep-marine" data-index="4">
-              <div class="card-inner">
-                <div class="card-header-badge">★ OCEAN SECRET</div>
-                <div class="card-visual-screen card-marine">
-                  <span class="holo-symbol">🐬</span>
-                  <div class="screen-grid"><span></span><span></span><span></span><span></span></div>
-                </div>
-                <div class="card-meta">
-                  <h3 class="card-name">Deep Sea Dolphin</h3>
-                  <span class="card-attr">TYPE: OCEAN / DEEP</span>
-                  <p class="card-desc">수면 왜곡 빛망울 & 돌고래 아쿠아</p>
-                </div>
-                <div class="card-holo-glare"></div>
-              </div>
-            </div>
-
-            <!-- Card 6 -->
-            <div class="holo-card" data-frame="silver-metal" data-index="5">
-              <div class="card-inner">
-                <div class="card-header-badge">★ METALLIC WMP</div>
-                <div class="card-visual-screen card-silver">
-                  <span class="holo-symbol">💿</span>
-                  <div class="screen-grid"><span></span><span></span><span></span><span></span></div>
-                </div>
-                <div class="card-meta">
-                  <h3 class="card-name">Silver Cyber CD</h3>
-                  <span class="card-attr">TYPE: STEEL / SOUND</span>
-                  <p class="card-desc">2000년대 미디어 플레이어 크롬 광택</p>
-                </div>
-                <div class="card-holo-glare"></div>
-              </div>
-            </div>
-
-            <!-- Card 7 -->
-            <div class="holo-card" data-frame="sun-citrus" data-index="6">
-              <div class="card-inner">
-                <div class="card-header-badge">★ ENERGY BOOST</div>
-                <div class="card-visual-screen card-citrus">
-                  <span class="holo-symbol">🍋</span>
-                  <div class="screen-grid"><span></span><span></span><span></span><span></span></div>
-                </div>
-                <div class="card-meta">
-                  <h3 class="card-name">Citrus Sunshine</h3>
-                  <span class="card-attr">TYPE: SPARK / ENERGY</span>
-                  <p class="card-desc">비타민 톡톡 튀는 투명 옐로 젤리</p>
-                </div>
-                <div class="card-holo-glare"></div>
-              </div>
-            </div>
-
-            <!-- Card 8 -->
-            <div class="holo-card" data-frame="cyber-neon" data-index="7">
-              <div class="card-inner">
-                <div class="card-header-badge">★ HARAJUKU 2000</div>
-                <div class="card-visual-screen card-neon">
-                  <span class="holo-symbol">⚡</span>
-                  <div class="screen-grid"><span></span><span></span><span></span><span></span></div>
-                </div>
-                <div class="card-meta">
-                  <h3 class="card-name">Neon Cyber Pop</h3>
-                  <span class="card-attr">TYPE: ELECTRIC / POP</span>
-                  <p class="card-desc">시부야 네온사인과 사이버펑크 핑크</p>
-                </div>
-                <div class="card-holo-glare"></div>
-              </div>
-            </div>
-          </div>
-
-          <button id="btn-card-next" class="arcade-nav-btn next-btn" title="다음 카드">〉</button>
+        <div class="draw-cards-container" id="drawCardsContainer">
+          <!-- JS에서 무작위 3장 카드가 렌더링됩니다 -->
         </div>
 
-        <div class="action-row center-align">
+        <div class="action-row center-align gacha-control-row">
+          <button id="btn-reroll-cards" class="aero-btn secondary-btn">
+            <span class="btn-shine"></span>
+            🎲 다시 뽑기 (REROLL)
+          </button>
           <button id="btn-goto-camera" class="aero-btn primary-btn large-btn pulse-glow">
             <span class="btn-shine"></span>
-            🎮 SELECT & START SHOOTING ➜
+            🎮 선택 완료 & 촬영 시작 ➜
           </button>
         </div>
       </section>
@@ -362,8 +225,8 @@
     </main>
 
     <footer class="aero-statusbar">
-      <span class="status-indicator">● Arcade Mode Enabled</span>
-      <span class="status-codec">FPS: 60 | DNFBitBitv2 Font Applied</span>
+      <span class="status-indicator">● Gacha Card System Active</span>
+      <span class="status-codec">FPS: 60 | High-Clarity No-Crop Engine</span>
     </footer>
   </div>
 
