@@ -1,11 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
   let currentStep = 1;
+  let currentCardIndex = 0;
   let selectedFrame = 'aqua-gloss';
   let capturedShots = [];
   let webcamStream = null;
   let fabricCanvas = null;
   let isDrawingMode = false;
   let activeColor = '#00f0ff';
+
+  const cards = Array.from(document.querySelectorAll('.holo-card'));
+  const totalCards = cards.length;
 
   const webcamVideo = document.getElementById('webcam');
   const flashOverlay = document.getElementById('flash-overlay');
@@ -25,7 +29,117 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const BACKEND_API_URL = 'http://localhost:5000/api/send-photo';
 
-  // 단계 전환 및 프로그레스 바 연동
+  // --- [레트로 사운드 신시사이저 (Web Audio API)] ---
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  function playArcadeSound(type) {
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    const now = audioCtx.currentTime;
+    if (type === 'card-swipe') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(440, now);
+      osc.frequency.exponentialRampToValueAtTime(880, now + 0.12);
+      gain.gain.setValueAtTime(0.15, now);
+      gain.gain.linearRampToValueAtTime(0, now + 0.12);
+      osc.start(now);
+      osc.stop(now + 0.12);
+    } else if (type === 'select') {
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(523.25, now);
+      osc.frequency.setValueAtTime(659.25, now + 0.08);
+      osc.frequency.setValueAtTime(783.99, now + 0.16);
+      gain.gain.setValueAtTime(0.2, now);
+      gain.gain.linearRampToValueAtTime(0, now + 0.28);
+      osc.start(now);
+      osc.stop(now + 0.28);
+    }
+  }
+
+  // --- [3D 카드 덱 렌더링 & 턴테이블 회전] ---
+  function update3DDeck() {
+    cards.forEach((card, idx) => {
+      let offset = idx - currentCardIndex;
+      // 순환 루프 계산
+      if (offset > totalCards / 2) offset -= totalCards;
+      if (offset < -totalCards / 2) offset += totalCards;
+
+      const absOffset = Math.abs(offset);
+
+      if (absOffset <= 2) {
+        card.style.display = 'block';
+        const translateX = offset * 180;
+        const translateZ = -absOffset * 150;
+        const rotateY = -offset * 25;
+        const scale = 1 - absOffset * 0.12;
+
+        card.style.transform = `translateX(${translateX}px) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`;
+        card.style.zIndex = 10 - absOffset;
+        card.style.opacity = 1 - absOffset * 0.28;
+        card.style.filter = absOffset === 0 ? 'brightness(1.05)' : 'brightness(0.7)';
+      } else {
+        card.style.display = 'none';
+      }
+
+      if (idx === currentCardIndex) {
+        card.classList.add('active');
+        selectedFrame = card.dataset.frame;
+      } else {
+        card.classList.remove('active');
+      }
+    });
+  }
+
+  // 카드 넘기기 컨트롤
+  function nextCard() {
+    playArcadeSound('card-swipe');
+    currentCardIndex = (currentCardIndex + 1) % totalCards;
+    update3DDeck();
+  }
+
+  function prevCard() {
+    playArcadeSound('card-swipe');
+    currentCardIndex = (currentCardIndex - 1 + totalCards) % totalCards;
+    update3DDeck();
+  }
+
+  document.getElementById('btn-card-next').addEventListener('click', nextCard);
+  document.getElementById('btn-card-prev').addEventListener('click', prevCard);
+
+  cards.forEach((card, index) => {
+    card.addEventListener('click', () => {
+      if (currentCardIndex !== index) {
+        playArcadeSound('card-swipe');
+        currentCardIndex = index;
+        update3DDeck();
+      }
+    });
+
+    // 홀로그램 자이로/틸트 인터랙션
+    card.addEventListener('mousemove', (e) => {
+      if (card.classList.contains('active')) {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        const rotateX = -y / 10;
+        const rotateY = x / 10;
+        card.style.transform = `translateX(0px) translateZ(0px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.04)`;
+      }
+    });
+
+    card.addEventListener('mouseleave', () => {
+      if (card.classList.contains('active')) {
+        update3DDeck();
+      }
+    });
+  });
+
+  update3DDeck();
+
+  // --- [단계 전환 & 프로그레스 바] ---
   function goToStep(stepNumber) {
     currentStep = stepNumber;
 
@@ -34,12 +148,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const statusText = document.getElementById('progress-status-text');
     const percentText = document.getElementById('progress-percent-text');
 
+    const statusNames = ['STAGE 1 : CARD SELECT', 'STAGE 2 : SHOOTING', 'STAGE 3 : DECORATION', 'STAGE 4 : PRINT & GET'];
+
     if (progressBar) progressBar.style.width = `${percentage}%`;
-    if (statusText) statusText.innerText = `STEP ${stepNumber} / 4`;
+    if (statusText) statusText.innerText = statusNames[stepNumber - 1];
     if (percentText) percentText.innerText = `${percentage}%`;
 
-    document.querySelectorAll('.track-markers .marker').forEach((marker, idx) => {
-      marker.classList.toggle('active', idx < stepNumber);
+    document.querySelectorAll('.track-markers .marker').forEach((m, idx) => {
+      m.classList.toggle('active', idx < stepNumber);
     });
 
     document.querySelectorAll('.stage-section').forEach(sec => sec.classList.remove('active'));
@@ -61,18 +177,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // 프레임 선택
-  document.querySelectorAll('.frame-card').forEach(card => {
-    card.addEventListener('click', () => {
-      document.querySelectorAll('.frame-card').forEach(c => c.classList.remove('active'));
-      card.classList.add('active');
-      selectedFrame = card.dataset.frame;
-    });
+  btnGotoCamera.addEventListener('click', () => {
+    playArcadeSound('select');
+    goToStep(2);
   });
 
-  btnGotoCamera.addEventListener('click', () => goToStep(2));
-
-  // 카메라 제어
+  // --- [웹캠 제어] ---
   async function startCamera() {
     try {
       webcamStream = await navigator.mediaDevices.getUserMedia({
@@ -81,8 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       webcamVideo.srcObject = webcamStream;
     } catch (err) {
-      console.error('웹캠 권한 오류:', err);
-      alert('카메라에 접근할 수 없습니다. 웹캠 권한을 허용했는지 확인해주세요!');
+      alert('카메라 권한을 확인해주세요!');
     }
   }
 
@@ -93,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // 촬영 카운트다운
+  // --- [4컷 릴레이 타이머 촬영] ---
   btnStartCountdown.addEventListener('click', () => {
     capturedShots = [];
     updateSlotPreviews();
@@ -113,11 +222,13 @@ document.addEventListener('DOMContentLoaded', () => {
     let count = 3;
     countdownDisplay.innerText = count;
     countdownDisplay.classList.add('show');
+    playArcadeSound('card-swipe');
 
     const timer = setInterval(() => {
       count--;
       if (count > 0) {
         countdownDisplay.innerText = count;
+        playArcadeSound('card-swipe');
       } else {
         clearInterval(timer);
         countdownDisplay.classList.remove('show');
@@ -127,14 +238,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 1000);
   }
 
-  // 비율 유지 크롭 및 뽀샤시 보정 촬영
+  // --- [비율 유지 크롭 & 프리쿠라 뽀샤시 뷰티 필터] ---
   function takeSingleShot(index) {
     flashOverlay.classList.add('active');
     setTimeout(() => flashOverlay.classList.remove('active'), 150);
 
     const targetW = 600;
     const targetH = 780;
-
     const offCanvas = document.createElement('canvas');
     offCanvas.width = targetW;
     offCanvas.height = targetH;
@@ -143,11 +253,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const vWidth = webcamVideo.videoWidth || 640;
     const vHeight = webcamVideo.videoHeight || 480;
 
-    // 중앙 크롭 계산
+    // 중앙 크롭 비율 계산 (찌그러짐 방지)
     const targetAspect = targetW / targetH;
     const videoAspect = vWidth / vHeight;
-
     let sWidth, sHeight, sx, sy;
+
     if (videoAspect > targetAspect) {
       sHeight = vHeight;
       sWidth = vHeight * targetAspect;
@@ -170,21 +280,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const imgData = ctx.getImageData(0, 0, targetW, targetH);
     const d = imgData.data;
     for (let i = 0; i < d.length; i += 4) {
-      let r = d[i];
-      let g = d[i + 1];
-      let b = d[i + 2];
-
+      let r = d[i], g = d[i+1], b = d[i+2];
       r = r + (255 - r) * 0.10 + 4;
       g = g + (255 - g) * 0.08 + 2;
       b = b + (255 - b) * 0.09 + 3;
-
       d[i] = Math.min(255, Math.max(0, r));
-      d[i + 1] = Math.min(255, Math.max(0, g));
-      d[i + 2] = Math.min(255, Math.max(0, b));
+      d[i+1] = Math.min(255, Math.max(0, g));
+      d[i+2] = Math.min(255, Math.max(0, b));
     }
     ctx.putImageData(imgData, 0, 0);
 
-    // 소프트 블룸 필터 합성
+    // 소프트 블룸 광채
     const bloomCanvas = document.createElement('canvas');
     bloomCanvas.width = targetW;
     bloomCanvas.height = targetH;
@@ -197,14 +303,13 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.drawImage(bloomCanvas, 0, 0);
     ctx.restore();
 
-    // 은은한 핑크 필름 레이어
+    // 핑크빛 미세 필터 막
     ctx.save();
     ctx.fillStyle = 'rgba(255, 235, 240, 0.07)';
     ctx.fillRect(0, 0, targetW, targetH);
     ctx.restore();
 
-    const shotData = offCanvas.toDataURL('image/png');
-    capturedShots.push(shotData);
+    capturedShots.push(offCanvas.toDataURL('image/png'));
     updateSlotPreviews();
   }
 
@@ -228,10 +333,13 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   btnGotoDeco.addEventListener('click', () => {
-    if (capturedShots.length === 4) goToStep(3);
+    if (capturedShots.length === 4) {
+      playArcadeSound('select');
+      goToStep(3);
+    }
   });
 
-  // Fabric.js 캔버스 초기화
+  // --- [Fabric.js 캔버스 데코레이션] ---
   function initFabricCanvas() {
     if (!fabricCanvas) {
       fabricCanvas = new fabric.Canvas('purikura-canvas', {
@@ -244,41 +352,16 @@ document.addEventListener('DOMContentLoaded', () => {
     drawPurikuraFrameBase();
   }
 
-  // 8종 프레임 테마 렌더링
   function drawPurikuraFrameBase() {
     const frameThemes = {
-      'aqua-gloss': {
-        bg: '#e2f4ff', border: '#0088eb', subBorder: '#a1dcff',
-        title: '🫧 AERO VISTA 2006 🫧', tag: 'WINDOWS AERO GLASS EDITION'
-      },
-      'cyber-green': {
-        bg: '#f0fdf0', border: '#2eb82e', subBorder: '#b3f0b3',
-        title: '🍃 MEADOW BLISS 🍃', tag: 'ENERGY & NATURAL FUTURE'
-      },
-      'y2k-pink': {
-        bg: '#fff0f5', border: '#ff4d94', subBorder: '#ffb3d1',
-        title: '🎀 PURIKURA SWEET 🎀', tag: 'TOKYO SHIBUYA 2004 MEMORY'
-      },
-      'matrix-holo': {
-        bg: '#161d26', border: '#00f0ff', subBorder: '#5c7cfa',
-        title: '🌌 COSMO CYBER GLOW 🌌', tag: 'HOLOGRAM SPACE MATRIX'
-      },
-      'deep-marine': {
-        bg: '#e0f7fa', border: '#0077b6', subBorder: '#90e0ef',
-        title: '🐬 AQUA MARINE DOLPHIN 🐬', tag: 'OCEAN PARADISE BREEZE'
-      },
-      'silver-metal': {
-        bg: '#f1f3f5', border: '#6c757d', subBorder: '#ced4da',
-        title: '💿 MEDIA PLAYER METALLIC 💿', tag: 'CYBER CHROME DIGITAL SOUND'
-      },
-      'sun-citrus': {
-        bg: '#fffde7', border: '#f59f00', subBorder: '#ffe066',
-        title: '🍋 CITRUS ENERGY POP 🍋', tag: 'SUNSHINE VITAMIN BOOST'
-      },
-      'cyber-neon': {
-        bg: '#1a0826', border: '#ff007f', subBorder: '#00f0ff',
-        title: '⚡ HARANJUKU NEON POP ⚡', tag: 'CYBERPUNK GLOW NIGHT'
-      }
+      'aqua-gloss': { bg: '#e2f4ff', border: '#0088eb', subBorder: '#a1dcff', title: '🫧 AERO VISTA 2006 🫧', tag: 'AERO GLASS CARD EDITION' },
+      'cyber-green': { bg: '#f0fdf0', border: '#2eb82e', subBorder: '#b3f0b3', title: '🍃 MEADOW BLISS 🍃', tag: 'BIO NATURE CARD EDITION' },
+      'y2k-pink': { bg: '#fff0f5', border: '#ff4d94', subBorder: '#ffb3d1', title: '🎀 PURIKURA SWEET 🎀', tag: 'Y2K SHIBUYA 2004 EDITION' },
+      'matrix-holo': { bg: '#161d26', border: '#00f0ff', subBorder: '#5c7cfa', title: '🌌 COSMO CYBER GLOW 🌌', tag: 'HOLOGRAM MATRIX EDITION' },
+      'deep-marine': { bg: '#e0f7fa', border: '#0077b6', subBorder: '#90e0ef', title: '🐬 AQUA MARINE DOLPHIN 🐬', tag: 'OCEAN CARD EDITION' },
+      'silver-metal': { bg: '#f1f3f5', border: '#6c757d', subBorder: '#ced4da', title: '💿 MEDIA PLAYER CHROME 💿', tag: 'METALLIC WMP EDITION' },
+      'sun-citrus': { bg: '#fffde7', border: '#f59f00', subBorder: '#ffe066', title: '🍋 CITRUS ENERGY POP 🍋', tag: 'ENERGY BOOST EDITION' },
+      'cyber-neon': { bg: '#1a0826', border: '#ff007f', subBorder: '#00f0ff', title: '⚡ HARAJUKU NEON POP ⚡', tag: 'NEON ARCADE EDITION' }
     };
 
     const theme = frameThemes[selectedFrame] || frameThemes['aqua-gloss'];
@@ -306,26 +389,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const slotW = 200, slotH = 260;
     const positions = [
-      { left: 30, top: 65 },
-      { left: 250, top: 65 },
-      { left: 30, top: 350 },
-      { left: 250, top: 350 }
+      { left: 30, top: 65 }, { left: 250, top: 65 },
+      { left: 30, top: 350 }, { left: 250, top: 350 }
     ];
 
     capturedShots.forEach((shotSrc, idx) => {
       if (idx < 4) {
         fabric.Image.fromURL(shotSrc, (img) => {
           img.set({
-            left: positions[idx].left,
-            top: positions[idx].top,
-            scaleX: slotW / img.width,
-            scaleY: slotH / img.height,
-            selectable: false,
-            evented: false,
-            stroke: '#ffffff',
-            strokeWidth: 4,
-            rx: 10,
-            ry: 10
+            left: positions[idx].left, top: positions[idx].top,
+            scaleX: slotW / img.width, scaleY: slotH / img.height,
+            selectable: false, evented: false, stroke: '#ffffff', strokeWidth: 4, rx: 10, ry: 10
           });
           fabricCanvas.add(img);
           fabricCanvas.sendToBack(img);
@@ -338,13 +412,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const dateStr = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;
     const dateText = new fabric.Text(`★ ${theme.tag} ★ ${dateStr}`, {
       left: 240, top: 670, originX: 'center', fontSize: 11, fontWeight: 'bold',
-      fill: theme.border, fontFamily: 'Segoe UI, sans-serif',
-      selectable: false, evented: false
+      fill: theme.border, fontFamily: 'Segoe UI, sans-serif', selectable: false, evented: false
     });
     fabricCanvas.add(dateText);
   }
 
-  // 스티커 도구 제어
+  // 스티커 도구
   document.querySelectorAll('.sticker-chip').forEach(chip => {
     chip.addEventListener('click', () => addStickerText(chip.dataset.val));
   });
@@ -416,7 +489,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   btnBackToCamera.addEventListener('click', () => goToStep(2));
-  btnFinishDeco.addEventListener('click', () => goToStep(4));
+  btnFinishDeco.addEventListener('click', () => {
+    playArcadeSound('select');
+    goToStep(4);
+  });
 
   function renderFinalExport() {
     fabricCanvas.discardActiveObject();
@@ -424,7 +500,7 @@ document.addEventListener('DOMContentLoaded', () => {
     finalResultImg.src = fabricCanvas.toDataURL({ format: 'png', quality: 1.0, multiplier: 1.5 });
   }
 
-  // 이메일 발송
+  // 이메일 전송
   btnSendEmail.addEventListener('click', async () => {
     const email = userEmailInput.value.trim();
     if (!email || !email.includes('@')) {
@@ -458,14 +534,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 직접 다운로드
   btnDownloadDirect.addEventListener('click', () => {
+    playArcadeSound('select');
     const link = document.createElement('a');
     link.download = `Aero_Purikura_${Date.now()}.png`;
     link.href = finalResultImg.src;
     link.click();
   });
 
-  // 처음부터 시작
+  // 다시 시작
   btnRestartApp.addEventListener('click', () => {
+    playArcadeSound('card-swipe');
     capturedShots = [];
     userEmailInput.value = '';
     emailStatusMessage.innerText = '';
