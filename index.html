@@ -4,15 +4,32 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aero Purikura Studio 🫧 에어로 프리쿠라 아케이드</title>
+  <!-- SUIT 웹폰트 등록 -->
+  <link href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/static/woff2/SUIT.css" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
 </head>
 <body>
-  <!-- 배경 글로우 및 부유 오브젝트 -->
+  <!-- 배경 글로우 및 아쿠아 수포 -->
   <div class="background-decorations">
     <div class="aqua-orb orb-1"></div>
     <div class="aqua-orb orb-2"></div>
     <div class="aqua-orb orb-3"></div>
+  </div>
+
+  <!-- 스플래시 화면 (인트로) -->
+  <div id="splash-screen" class="splash-overlay active">
+    <div class="splash-card">
+      <div class="splash-badge">🫧 2006 WINDOWS AERO PHOTO BOOTH 🫧</div>
+      <h1 class="splash-title">Aero Purikura Studio</h1>
+      <p class="splash-desc">행운의 슬롯을 돌리고 세상에 단 하나뿐인 프리쿠라를 남겨보세요!</p>
+      <div class="splash-mascot">🐬 📸 ✨</div>
+      <button id="btn-start-app" class="aero-btn primary-btn large-btn pulse-glow">
+        <span class="btn-shine"></span>
+        🪙 클릭해서 찍으러 가기 (START)
+      </button>
+      <span class="splash-footer-text">INSERT COIN TO PLAY</span>
+    </div>
   </div>
 
   <!-- 메인 윈도우 프레임 -->
@@ -20,7 +37,7 @@
     <header class="aero-titlebar">
       <div class="titlebar-left">
         <span class="aero-logo-icon">🫧</span>
-        <span class="window-title">Aero Purikura 2006 Arcade Edition.exe</span>
+        <span class="window-title">Aero Purikura Arcade Edition 2006.exe</span>
       </div>
       <div class="titlebar-controls">
         <button class="win-btn minimize">_</button>
@@ -30,10 +47,10 @@
     </header>
 
     <main class="aero-content">
-      <!-- 에어로 젤리 프로그레스 바 -->
+      <!-- 에어로 젤리 프로그레스 바 (점 마커 제거) -->
       <div class="aero-progress-container">
         <div class="aero-progress-meta">
-          <span class="progress-status" id="progress-status-text">STAGE 1 : CARD DRAW</span>
+          <span class="progress-status" id="progress-status-text">STAGE 1 : PULL THE LEVER</span>
           <span class="progress-percent" id="progress-percent-text">25%</span>
         </div>
         <div class="aero-progress-track">
@@ -41,31 +58,50 @@
             <span class="progress-shine"></span>
             <span class="progress-stripes"></span>
           </div>
-          <div class="track-markers">
-            <span class="marker active" data-step="1"></span>
-            <span class="marker" data-step="2"></span>
-            <span class="marker" data-step="3"></span>
-            <span class="marker" data-step="4"></span>
-          </div>
         </div>
       </div>
 
-      <!-- 단계 1: 랜덤 3장 카드 뽑기 화면 -->
+      <!-- 단계 1: 슬롯머신 & 프레임 선택 화면 -->
       <section id="stage-frame" class="stage-section active">
         <div class="game-header-banner">
-          <span class="arcade-badge">LUCKY 3-CARD DRAW 🎲 READY</span>
-          <h2 class="arcade-heading">CHOOSE YOUR LUCKY FRAME</h2>
-          <p class="arcade-sub">뽑힌 3장의 카드 중 마음에 드는 프레임 카드를 클릭하세요!</p>
+          <span class="arcade-badge" id="slot-banner-badge">LUCKY SLOT MACHINE 🎰</span>
+          <h2 class="arcade-heading" id="slot-banner-title">PULL LEVER TO SPIN!</h2>
+          <p class="arcade-sub" id="slot-banner-sub">우측의 빨간 레버를 아래로 당겨 슬롯을 돌리세요!</p>
         </div>
 
-        <div class="draw-cards-container" id="drawCardsContainer">
-          <!-- JS에서 무작위 3장 카드가 렌더링됩니다 -->
+        <div class="slot-machine-wrapper" id="slotMachineWrapper">
+          <div class="slot-machine-cabinet">
+            <div class="slot-display-window">
+              <div class="slot-reels-wrapper">
+                <div class="slot-reel-box" id="reel-0">
+                  <div class="reel-strip"><div class="reel-item"><span class="reel-icon">🫧</span><span class="reel-name">Aqua</span></div></div>
+                </div>
+                <div class="slot-reel-box" id="reel-1">
+                  <div class="reel-strip"><div class="reel-item"><span class="reel-icon">🎀</span><span class="reel-name">Sakura</span></div></div>
+                </div>
+                <div class="slot-reel-box" id="reel-2">
+                  <div class="reel-strip"><div class="reel-item"><span class="reel-icon">🍋</span><span class="reel-name">Citrus</span></div></div>
+                </div>
+              </div>
+              <div class="slot-glass-glare"></div>
+            </div>
+            <div class="cabinet-status-light">● READY TO PULL</div>
+          </div>
+
+          <div class="slot-lever-assembly" id="slotLeverAssembly" title="레버를 클릭해서 당기세요!">
+            <div class="lever-base"></div>
+            <div class="lever-shaft" id="leverShaft">
+              <div class="lever-ball"></div>
+            </div>
+          </div>
         </div>
 
-        <div class="action-row center-align gacha-control-row">
-          <button id="btn-reroll-cards" class="aero-btn secondary-btn">
+        <div class="draw-cards-container" id="drawCardsContainer"></div>
+
+        <div class="action-row center-align gacha-control-row" id="cardActionRow" style="display: none;">
+          <button id="btn-respin-slot" class="aero-btn secondary-btn">
             <span class="btn-shine"></span>
-            🎲 다시 뽑기 (REROLL)
+            🎰 다시 돌리기 (RE-SPIN)
           </button>
           <button id="btn-goto-camera" class="aero-btn primary-btn large-btn pulse-glow">
             <span class="btn-shine"></span>
@@ -88,7 +124,7 @@
             </div>
             
             <div class="booth-controls">
-              <button id="btn-start-countdown" class="aero-btn green-btn pulse-glow">
+              <button id="btn-start-countdown" class="aero-btn primary-btn pulse-glow">
                 <span class="btn-shine"></span>
                 🔴 촬영 시작 (3초 타이머)
               </button>
@@ -128,25 +164,25 @@
                 <button class="sticker-chip" data-val="✨">✨</button>
                 <button class="sticker-chip" data-val="🌟">🌟</button>
                 <button class="sticker-chip" data-val="💿">💿</button>
-                <button class="sticker-chip" data-val="🍀">🍀</button>
-                <button class="sticker-chip" data-val="🎀">🎀</button>
                 <button class="sticker-chip" data-val="💧">💧</button>
                 <button class="sticker-chip" data-val="🕊️">🕊️</button>
-                <button class="sticker-chip" data-val="BEST FRIENDS">💖 BEST</button>
+                <button class="sticker-chip" data-val="🎀">🎀</button>
+                <button class="sticker-chip" data-val="🍋">🍋</button>
                 <button class="sticker-chip" data-val="AERO 2006">🩵 AERO</button>
+                <button class="sticker-chip" data-val="KAWAII">💖 POP</button>
                 <button class="sticker-chip" data-val="PURIKURA★">★ KURA</button>
                 <button class="sticker-chip" data-val="HAPPY DAY">🌈 HAPPY</button>
               </div>
             </div>
 
             <div class="panel-box">
-              <h3 class="panel-title">🖌️ 네온 글로우 펜</h3>
+              <h3 class="panel-title">🖌️ 네온 펜</h3>
               <div class="brush-settings">
                 <div class="color-picker-row">
-                  <span class="color-dot active" style="background:#00f0ff;" data-color="#00f0ff"></span>
+                  <span class="color-dot active" style="background:#00d2ff;" data-color="#00d2ff"></span>
                   <span class="color-dot" style="background:#ff2a85;" data-color="#ff2a85"></span>
-                  <span class="color-dot" style="background:#ffff00;" data-color="#ffff00"></span>
-                  <span class="color-dot" style="background:#39ff14;" data-color="#39ff14"></span>
+                  <span class="color-dot" style="background:#ffd000;" data-color="#ffd000"></span>
+                  <span class="color-dot" style="background:#0078d7;" data-color="#0078d7"></span>
                   <span class="color-dot" style="background:#ffffff;" data-color="#ffffff"></span>
                 </div>
                 <div class="brush-actions">
@@ -187,8 +223,8 @@
 
       <!-- 단계 4: 완성 및 수령 화면 -->
       <section id="stage-result" class="stage-section">
-        <h2 class="glossy-heading">🎉 축하합니다! 완성을 완료했습니다</h2>
-        <p class="sub-text">완성된 프리쿠라 사진을 확인하고 바로 소장하세요.</p>
+        <h2 class="glossy-heading">🎉 완성을 축하합니다!</h2>
+        <p class="sub-text">완성된 프리쿠라 사진을 확인하고 소장하세요.</p>
 
         <div class="result-layout">
           <div class="result-preview-box">
@@ -198,11 +234,11 @@
           <div class="result-action-card">
             <div class="email-delivery-panel">
               <h3 class="panel-title">📧 이메일로 고화질 받기</h3>
-              <p class="delivery-desc">입력하신 메일함으로 첨부파일을 전송합니다 (서버 실행 시).</p>
+              <p class="delivery-desc">입력하신 메일함으로 사진을 전송합니다 (서버 실행 시).</p>
               
               <div class="email-input-group">
                 <input type="email" id="user-email-input" placeholder="example@domain.com">
-                <button id="btn-send-email" class="aero-btn green-btn">
+                <button id="btn-send-email" class="aero-btn primary-btn">
                   <span class="btn-shine"></span>🚀 이메일로 전송
                 </button>
               </div>
@@ -216,7 +252,7 @@
                 <span class="btn-shine"></span>💾 내 컴퓨터에 바로 저장 (PNG)
               </button>
               <button id="btn-restart-app" class="aero-btn secondary-btn" style="width: 100%; margin-top: 12px;">
-                🔄 처음부터 새로 찍기
+                🔄 처음부터 새로 돌리기
               </button>
             </div>
           </div>
@@ -225,8 +261,8 @@
     </main>
 
     <footer class="aero-statusbar">
-      <span class="status-indicator">● Gacha Card System Active</span>
-      <span class="status-codec">FPS: 60 | High-Clarity No-Crop Engine</span>
+      <span class="status-indicator">● SUIT Typography Engine Active</span>
+      <span class="status-codec">Font: SUIT / Clean Progress Bar Ready</span>
     </footer>
   </div>
 
