@@ -26,8 +26,8 @@
 
     <!-- 진행 상황 표시줄 -->
     <div class="progress-bar-wrap">
-      <span id="stepLabel">STEP 1 : DRAW THREE TAROT CARDS</span>
-      <div class="progress-track">
+      <span id="stepLabel">STEP 1 / 4 · SHUFFLE & SELECT</span>
+      <div class="progress-track" role="progressbar" aria-label="진행 상황" aria-valuemin="0" aria-valuemax="100" aria-valuenow="25">
         <div class="progress-fill" id="progressFill"></div>
       </div>
     </div>
@@ -48,17 +48,31 @@
             <!-- JS로 8장의 타로 카드(앞/뒷면 플립 구조) 렌더링 -->
           </div>
 
-          <div class="reading-result-box" id="readingResult" style="display: none;">
-            <div class="oracle-spread" id="oracleSpread">
-              <!-- JS로 과거/현재/미래 3장의 리딩 카드가 채워짐 -->
-            </div>
-            <button class="arcana-btn coral" id="toStage2Btn">ENTER PHOTO BOOTH →</button>
+          <div class="selection-next" id="selectionNext" hidden>
+            <p>세 장의 카드가 선택되었어요.</p>
+            <button class="arcana-btn coral" id="toStage2Btn" disabled>REVEAL YOUR READING →</button>
           </div>
         </div>
       </section>
 
-      <!-- STAGE 2: 카드별 사진 촬영 (3장) -->
+      <!-- STAGE 2: 선택한 카드의 운세 해석 -->
       <section class="stage" id="stage2">
+        <div class="section-title">
+          <p>YOUR PERSONAL ORACLE</p>
+          <h2>Read Your <em>Arcana</em></h2>
+          <p class="desc">선택한 순서대로 과거, 현재, 미래의 메시지를 확인하세요.</p>
+        </div>
+        <div class="reading-result-box reading-page">
+          <div class="oracle-spread" id="oracleSpread"></div>
+          <div class="stage-actions">
+            <button class="arcana-btn" id="backToCardsBtn" type="button">← BACK TO CARDS</button>
+            <button class="arcana-btn coral" id="toPhotoStageBtn" type="button">ENTER PHOTO BOOTH →</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- STAGE 3: 카드별 사진 촬영 (3장) -->
+      <section class="stage" id="stage3">
         <div class="section-title">
           <p>THREE WINDOWS OF MEMORY</p>
           <h2>Capture <em>Moments</em></h2>
@@ -89,8 +103,8 @@
         </div>
       </section>
 
-      <!-- STAGE 3: 카드별 개별 프리쿠라 꾸미기 -->
-      <section class="stage" id="stage3">
+      <!-- STAGE 4: 카드별 개별 프리쿠라 꾸미기 -->
+      <section class="stage" id="stage4">
         <div class="section-title">
           <p>THREE SEPARATE ORACLE CARDS</p>
           <h2>Aero <em>Purikura</em> Deco</h2>
@@ -126,24 +140,20 @@
             <canvas id="purikuraCanvas" width="320" height="560"></canvas>
           </div>
         </div>
+
+        <section class="result-archive" id="resultArchive" hidden>
+          <div class="archive-heading">
+            <p>ETERNAL ARCHIVE PRESERVED</p>
+            <h3>Your Three Oracle Cards</h3>
+            <p>완성한 카드를 각각 PNG 이미지로 저장할 수 있어요.</p>
+          </div>
+          <div class="result-grid" id="resultGrid"></div>
+          <div class="btn-cluster archive-actions">
+            <button class="arcana-btn" type="button" onclick="location.reload()">↺ START A NEW READING</button>
+          </div>
+        </section>
       </section>
 
-      <!-- STAGE 4: 완성 및 다운로드 (카드 3장 각각) -->
-      <section class="stage" id="stage4">
-        <div class="section-title">
-          <p>ETERNAL ARCHIVE PRESERVED</p>
-          <h2>Your <em>Three Oracle Cards</em></h2>
-          <p class="desc">투명한 아쿠아와 당신이 뽑은 세 장의 타로 기운이 담긴, 세상에 하나뿐인 카드입니다.</p>
-        </div>
-
-        <div class="result-grid" id="resultGrid">
-          <!-- JS로 카드 3장의 결과 이미지 + 다운로드 버튼 렌더링 -->
-        </div>
-
-        <div class="btn-cluster" style="justify-content:center; margin-top: 18px;">
-          <button class="arcana-btn" onclick="location.reload()">↺ RETRY (NEW RUN)</button>
-        </div>
-      </section>
     </main>
 
     <!-- 푸터 -->
